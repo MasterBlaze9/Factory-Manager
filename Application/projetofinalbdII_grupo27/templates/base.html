@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}TechHaven{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static '/img/favicon.ico' %}" />
+    <link rel="stylesheet" href="{% static '/fontawesome/all.css' %}" />
+    <link
+      rel="stylesheet"
+      href="{% static '/bootstrap5/css/bootstrap.min.css' %}"
+    />
+    <link
+      href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <link rel="stylesheet" href="{% static 'custom_bootstrap_styles.css' %}" />
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body class="d-flex flex-column">
+    <nav
+      class="navbar navbar-expand-md navbar-dark bg-dark"
+      aria-label="Fourth navbar example"
+    >
+      <div class="container-fluid">
+        <div
+          class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none"
+        >
+          <img src="/static/img/techhaven.png" alt="logo" width="60" />
+          <span class="px-2 fs-4">TechHaven</span>
+        </div>
+      </div>
+    </nav>
+    {% if user.is_authenticated %}
+    <div class="container-fluid">
+      <div class="row">
+        <div
+          class="col-md-3 col-lg-2 d-flex flex-column flex-shrink-0 p-3 text-bg-dark"
+        >
+          <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+              <a
+                href="/component/to_order_list"
+                class="nav-link"
+                aria-current="page"
+              >
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                Encomendar componentes
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="/component/orders/list"
+                class="nav-link"
+                aria-current="page"
+              >
+                <i class="fa-solid fa-truck-ramp-box"></i>
+                Lista de encomendas de componentes
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/equipment/list" class="nav-link" aria-current="page">
+                <i class="fa-solid fa-desktop"></i>
+                Gerir equipamentos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="/equipment/to_order_list/"
+                class="nav-link"
+                aria-current="page"
+              >
+                <i class="fa-solid fa-wrench"></i>
+                Encomendar equipamentos
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="/equipment/client_orders/list"
+                class="nav-link"
+                aria-current="page"
+              >
+                <i class="fa-solid fa-truck-ramp-box"></i>
+                Lista de encomendas de equipamentos
+              </a>
+            </li>
+            <!-- Administration -->
+            {% if user.is_staff %}
+            <hr />
+            <li class="nav-item">
+              <a href="/warehouse/list" class="nav-link" aria-current="page">
+                <i class="fa-solid fa-warehouse"></i>
+                Gerir armazéns
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/component/list" class="nav-link" aria-current="page">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                Gerir componentes
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/client/list" class="nav-link" aria-current="page">
+                <i class="fa-solid fa-users"></i>
+                Gerir clientes
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/supplier/list" class="nav-link" aria-current="page">
+                <i class="fa-solid fa-truck-field"></i>
+                Gerir fornecedores
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="/production/worktype/list/"
+                class="nav-link"
+                aria-current="page"
+              >
+                <i class="fa-solid fa-person-digging"></i>
+                Gerir mão de obra
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="/equipment/type/list/"
+                class="nav-link"
+                aria-current="page"
+              >
+                <i class="fa-solid fa-table-list"></i>
+                Gerir tipos de equipamento
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+          <hr />
+          <div class="dropdown">
+            <a
+              href="#"
+              class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <strong>{{ user.get_username }}</strong>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+              <li>
+                <a class="dropdown-item" href="/user/logout">
+                  <i class="fa-solid fa-right-from-bracket"></i>
+                  Terminar sessão
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <main
+          class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-md-2 min-vh-without-nav-height"
+        >
+          {% block content %} {% endblock %}
+
+          <!--<footer class="mt-auto border-top">
+            <p class="text-center text-muted">&copy; 2023 TechHaven</p>
+          </footer>-->
+        </main>
+      </div>
+    </div>
+    {% else %}
+    <main class="container">
+      {% block content_no_session %} {% endblock %}
+
+      <!--<footer class="mt-auto border-top">
+            <p class="text-center text-muted">&copy; 2023 TechHaven</p>
+          </footer>-->
+    </main>
+    {% endif %}
+  </body>
+  <script
+    src="https://code.jquery.com/jquery-3.7.1.js"
+    integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"
+    crossorigin="anonymous"
+  ></script>
+  <script src="{% static '/fontawesome/all.js' %}"></script>
+  <script src="{% static '/js/global_functions.js' %}"></script>
+  <script src="{% static '/bootstrap5/js/bootstrap.bundle.min.js' %}" />
+  <script src="{% static '/bootstrap5/js/bootstrap.min.js' %}" />
+  <script>
+    var tooltipTriggerList = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  </script>
+  {% block extra_scripts %}{% endblock %}
+</html>

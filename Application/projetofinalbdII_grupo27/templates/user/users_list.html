@@ -1,0 +1,48 @@
+{% extends 'base.html' %} {% block content %}
+<h1>Lista de utilizadores</h1>
+
+<table id="table-users" class="table table-striped" style="width: 100%">
+  <thead>
+    <tr>
+      <!-- Adjust headers based on your view columns -->
+      <th>Id</th>
+      <th>Nome de utilizador</th>
+      <th>Primeiro nome</th>
+      <th>Último nome</th>
+      <th>Email</th>
+      <th>Está ativo?</th>
+      <th>Último login</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in view_data %}
+    <tr>
+      <!-- Access individual columns of the fetched data -->
+      <td>{{ row.0 }}</td>
+      <td>{{ row.1|default:"-" }}</td>
+      <td>{{ row.2|default:"-" }}</td>
+      <td>{{ row.3|default:"-" }}</td>
+      <td>{{ row.4|default:"-" }}</td>
+      {% if row.5 == True %}
+      <td>Sim</td>
+      {% else %}
+      <td>Não</td>
+      {% endif %}
+      <td>{{ row.6|date:"d/m/Y H:i:s"|default:"-" }}</td>
+
+      <!-- Display more columns as needed -->
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-users").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      }
+    });
+  });
+</script>
+{% endblock %}

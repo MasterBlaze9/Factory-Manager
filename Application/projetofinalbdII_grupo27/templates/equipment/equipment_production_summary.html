@@ -1,0 +1,237 @@
+{% extends 'base.html' %} {% block content %}
+<form id="equipmentProductionForm" method="POST">
+  {% csrf_token %}
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+  >
+    <h1 class="h2">Resumo da produção</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="">
+        <input
+          type="hidden"
+          id="inputTotalCost"
+          name="inputTotalCost"
+          class="d-none"
+        />
+        <h3 id="totalCost" name="totalCost" class="d-none"></h3>
+      </div>
+    </div>
+  </div>
+  <div id="divError_message" class="mt-3 mb-3 d-none">
+    <h6 id="error_message" class="text-danger"></h6>
+  </div>
+  <div class="pt-3">
+    <input type="hidden" name="equipment_id" value="{{ equipment_id }}" />
+    <div class="row">
+      <div class="col-4">
+        <label for="select_worktype" class="form-label"
+          >Tipo de mão de obra</label
+        >
+        <select
+          class="form-select"
+          id="select_worktype"
+          name="select_worktype"
+          required
+        >
+          <option value="" selected>Escolha um tipo de mão de obra</option>
+          {% for row in worktypes %}
+          <option value="{{ row.0 }}">{{ row.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-4">
+        <label for="select_warehouse" class="form-label">Armazenar em</label>
+        <select
+          class="form-select"
+          id="select_warehouse"
+          name="select_warehouse"
+          required
+        >
+          <option value="" selected>Escolha um armazém</option>
+          {% for row in warehouses %}
+          <option value="{{ row.0 }}">{{ row.1 }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-4">
+        <label for="quantity_to_produce" class="form-label"
+          >Quantidade a produzir</label
+        >
+        <input
+          onchange="updateTotalPrice()"
+          class="form-control default-value-1"
+          type="number"
+          id="quantity_to_produce"
+          name="quantity_to_produce"
+          required
+          min="1"
+          value="1"
+        />
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-4">
+        <label for="start_date" class="form-label">Data de início</label>
+        <input
+          class="form-control"
+          type="date"
+          id="start_date"
+          name="start_date"
+          required
+        />
+      </div>
+      <div class="col-4">
+        <label for="end_date" class="form-label">Data de fim</label>
+        <input
+          class="form-control"
+          type="date"
+          id="end_date"
+          name="end_date"
+          required
+        />
+      </div>
+    </div>
+    <div class="row mt-3">
+      <table
+        id="table-selected-components"
+        class="table table-striped"
+        style="width: 100%"
+      >
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Fornecedor</th>
+            <th>Armazém</th>
+            <th>Stock</th>
+            <th>Preço unitário</th>
+            <th>Quantidade</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in equipment_production_summary %}
+          <tr>
+            <td>{{ row.2.strip|default:"-" }}</td>
+            <td>{{ row.4.strip|default:"-" }}</td>
+            <td>{{ row.6.strip|default:"-" }}</td>
+            <td>{{ row.7|default:"-" }}</td>
+            <td class="component-price">{{ row.8 }}€</td>
+            <td>
+              <div class="col-md-6">
+                <input
+                  type="hidden"
+                  name="warehouse_component_id_{{ row.0 }}"
+                  value="{{ row.0 }}"
+                />
+                <input
+                  onchange="updateTotalPrice()"
+                  class="form-control component-quantity default-value-1"
+                  name="quantity_{{ row.0 }}"
+                  type="number"
+                  value="1"
+                  min="1"
+                  max="{{ row.7 }}"
+                />
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="mt-md-4">
+      <a
+        id="btnGoBack"
+        class="btn btn-secondary"
+        href="/equipment/list/"
+        +
+        {{
+        equipment_id
+        }}
+        >Voltar</a
+      >
+      <button id="btnSubmit" class="btn btn-success float-end" type="Submit">
+        Submeter encomenda
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-selected-components").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+
+    updateTotalPrice();
+  });
+
+  document
+    .getElementById("equipmentProductionForm")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const form = event.target;
+      const formData = new FormData(form);
+
+      fetch("/equipment/createEquipmentProduction", {
+        method: "POST",
+        body: formData
+      })
+        .then((response) => {
+          if (response.status == 200) {
+            window.location.replace(
+              getBaseURL("/equipment") + "/equipment/list/"
+            );
+          } else {
+            document
+              .getElementById("divError_message")
+              .classList.remove("d-none");
+            document.getElementById("error_message").innerText =
+              response.statusText;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+
+  function updateTotalPrice() {
+    const priceElements = document.getElementsByClassName("component-price");
+    const quantityElements =
+      document.getElementsByClassName("component-quantity");
+    const totalCostElement = document.getElementById("totalCost");
+    const inputTotalCostElement = document.getElementById("inputTotalCost");
+
+    const quantityToProduce = document.getElementById("quantity_to_produce");
+    if (
+      quantity_to_produce == "" ||
+      quantity_to_produce.value == "0" ||
+      quantity_to_produce.value == 0
+    )
+      quantity_to_produce.value = 1;
+
+    let quantity,
+      componentTotalPrice,
+      totalCost = 0;
+    Object.keys(priceElements).forEach((key) => {
+      quantity = checkDefaultVal(quantityElements[key].value);
+      componentTotalPrice = priceElements[key].innerText.replace("€", "") * quantity;
+
+      totalCost += componentTotalPrice;
+    });
+
+    aux = parseFloat(totalCost * quantityToProduce.value).toFixed(2);
+    totalCostElement.innerHTML = "Custo total: " + aux + "€";
+    inputTotalCostElement.value = aux;
+    totalCostElement.classList.remove("d-none");
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %} {% block content %}
+
+<form method="post">
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+  >
+    {% csrf_token %}
+    <h1 class="h2">
+      {% if form.warehouse_id == 0 %}Criar novo {% else %}Editar {% endif %}armazém
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group"></div>
+    </div>
+  </div>
+  <div class="mt-3 mb-3">
+    <label for="inputDesignation" class="form-label fw-semibold">Designação</label>
+    <input
+      id="inputDesignation"
+      name="designation"
+      type="text"
+      class="form-control"
+      placeholder="Designação"
+      maxlength="100"
+      value="{{ form.designation }}"
+    />
+  </div>
+  <div class="mb-3">
+    <label for="inputAddress" class="form-label fw-semibold">Morada</label>
+    <input
+      id="inputAddress"
+      name="address"
+      type="text"
+      class="form-control"
+      placeholder="Morada"
+      maxlength="100"
+      value="{{ form.address }}"
+    />
+  </div>
+  <a id="btnGoBack" class="btn btn-secondary me-3" href="/warehouse/list/"
+    >Voltar</a
+  >
+  <input
+    class="btn btn-success float-end"
+    type="submit"
+    value="Guardar alterações"
+  />
+</form>
+
+{% endblock %}

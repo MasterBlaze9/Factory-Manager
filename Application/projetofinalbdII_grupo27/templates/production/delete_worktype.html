@@ -1,0 +1,27 @@
+{% extends 'base.html' %} {% block content %}
+<form method="post">
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+  >
+    {% csrf_token %}
+    <h1 class="h2">Eliminar tipo de mão de obra</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group"></div>
+    </div>
+  </div>
+  <div class="mt-3 mb-3">
+    <p>
+      De certeza que pretende eliminar o tipo de mão de obra
+      <span class="fw-semibold">{{ form.designation }}</span>? Esta ação é
+      irreversível.
+    </p>
+  </div>
+  <a
+    id="btnGoBack"
+    class="btn btn-secondary me-3"
+    href="{% url 'list_worktype' %}"
+    >Voltar</a
+  >
+  <input class="btn btn-danger" type="submit" value="Eliminar" />
+</form>
+{% endblock %}

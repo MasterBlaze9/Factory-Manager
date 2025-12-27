@@ -1,0 +1,136 @@
+{% extends 'base.html' %} {% block content %}
+<form
+  action="{% url 'client_order_summary' %}"
+  method="POST"
+  onsubmit="return getSelectedEquipments()"
+>
+  {% csrf_token %}
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+  >
+    <h1 class="h2">Encomendar equipamentos</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <button id="btnOrder" class="btn btn-success d-none" type="submit">
+        Encomendar
+      </button>
+    </div>
+  </div>
+  <div class="pt-md-3">
+    <input id="selected_equipments" name="selected_equipments" type="hidden" />
+    <table
+      id="table-equipments-to-order"
+      class="table table-striped"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th class="no-sort"></th>
+          <th>Id</th>
+          <th>Designação</th>
+          <th>Descrição</th>
+          <th>Tipo</th>
+          <th>Componentes</th>
+          <th>Preço</th>
+          <th>Stock</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in view_data %}
+        <tr>
+          <td>
+            <input type="checkbox" name="selected_items" value="{{ row.6 }}" />
+          </td>
+          <td>{{ row.0 }}</td>
+          <td>{{ row.1.strip|default:"-" }}</td>
+          {% if row.2|length > 70 %}
+          <td
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="{{ row.2 }}"
+          >
+            {{ row.2|default:"-"|truncatechars:70 }}
+          </td>
+          {% else %}
+          <td>{{ row.2|default:"-" }}</td>
+          {% endif %}
+          <td>{{ row.4.strip|default:"-" }}</td>
+          {% if row.8|length > 70 %}
+          <td
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="{{ row.8 }}"
+          >
+            {{ row.8|default:"-"|truncatechars:70 }}
+          </td>
+          {% else %}
+          <td>{{ row.8|default:"-" }}</td>
+          {% endif %}
+          <td>{{ row.5|default:"-" }}€</td>
+          <td>{{ row.7|default:"-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</form>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-equipments-to-order").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+  });
+
+  const checkboxes = document.querySelectorAll(
+    'input[type="checkbox"][name="selected_items"]'
+  );
+
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", checkIfAnySelected);
+  });
+
+  function checkIfAnySelected() {
+    const checkboxes = document.querySelectorAll(
+      'input[type="checkbox"][name="selected_items"]'
+    );
+
+    let isChecked = false;
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        isChecked = true;
+      }
+    });
+
+    isChecked
+      ? document.getElementById("btnOrder").classList.remove("d-none")
+      : document.getElementById("btnOrder").classList.add("d-none");
+
+    return isChecked;
+  }
+
+  window.addEventListener("DOMContentLoaded", checkIfAnySelected);
+
+  function getSelectedEquipments() {
+    const checkboxes = document.querySelectorAll(
+      'input[type="checkbox"][name="selected_items"]'
+    );
+
+    let selectedEquipments = [];
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        selectedEquipments.push(checkbox.value);
+      }
+    });
+
+    document.getElementById("selected_equipments").value = selectedEquipments;
+  }
+</script>
+{% endblock %}

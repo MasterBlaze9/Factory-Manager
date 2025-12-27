@@ -1,0 +1,52 @@
+<components>
+  <component>
+    <designation>Super Product 1</designation>
+    <price>10.99</price>
+    <supplier_name>Fornecedor ABC</supplier_name>
+  </component>
+  <component>
+    <designation>Super Product 2</designation>
+    <price>19.99</price>
+    <supplier_name>Fornecedor ABC</supplier_name>
+  </component>
+  <component>
+    <designation>Super Product 3</designation>
+    <price>5.99</price>
+    <supplier_name>Fornecedor XYZ</supplier_name>
+  </component>
+  <component>
+    <designation>Super Product 4</designation>
+    <price>14.99</price>
+    <supplier_name>Fornecedor XYZ</supplier_name>
+  </component>
+  <component>
+    <designation>Super Product 5</designation>
+    <price>8.99</price>
+    <supplier_name>Fornecedor ABC</supplier_name>
+  </component>
+  <component>
+    <designation>Super Product 6</designation>
+    <price>12.99</price>
+    <supplier_name>Fornecedor ABC</supplier_name>
+  </component>
+  <component>
+    <designation>Super Product 7</designation>
+    <price>7.99</price>
+    <supplier_name>Fornecedor ABC</supplier_name>
+  </component>
+  <component>
+    <designation>Super Product 8</designation>
+    <price>9.99</price>
+    <supplier_name>Fornecedor XYZ</supplier_name>
+  </component>
+  <component>
+    <designation>Super Product 9</designation>
+    <price>11.99</price>
+    <supplier_name>Fornecedor ABC</supplier_name>
+  </component>
+  <component>
+    <designation>Super Product 10</designation>
+    <price>6.99</price>
+    <supplier_name>Fornecedor XYZ</supplier_name>
+  </component>
+</components>

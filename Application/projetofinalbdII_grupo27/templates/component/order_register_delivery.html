@@ -1,0 +1,159 @@
+{% extends 'base.html' %} {% block content %}
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+>
+  <h1 class="h2">Registar receção de componentes</h1>
+  <div class="btn-toolbar mb-2 mb-md-0"></div>
+</div>
+<div id="divError_message" class="mt-3 mb-3 d-none">
+  <h6 id="error_message" class="text-danger"></h6>
+</div>
+<div class="pt-3">
+  <form id="registerDeliveryForm" method="POST">
+    {% csrf_token %}
+    <input type="hidden" id="order_id" name="order_id" value="{{ order_id }}" />
+    <table
+      id="table-selected-components-register-delivery"
+      class="table table-striped"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th>Componente</th>
+          <th>Fornecedor</th>
+          <th>Preço unitário</th>
+          <th>Quantidade recebida</th>
+          <th>Valor total</th>
+          <th>Quantidade a receber</th>
+          <th>Data da entrega</th>
+          <th>Local de armazenamento</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in components_to_deliver %}
+        <tr>
+          <td>{{ row.1.strip|default:"-" }}</td>
+          <td>{{ row.8.strip|default:"-" }}</td>
+          <td class="component-price">{{ row.5 }}</td>
+          <td>{{ row.3|default:0 }} de {{ row.2 }}</td>
+          <td>{{ row.6 }}€</td>
+          <td>
+            <div class="col-md-12">
+              <input
+                type="hidden"
+                name="order_component_id_{{ row.11 }}"
+                value="{{ row.11 }}"
+              />
+
+              <input
+                class="form-control component-quantity default-value-1"
+                name="deliveredQuantity_{{ row.11 }}"
+                type="number"
+                value="1"
+                min="1"
+                max="{{ row.4 }}"
+                required
+              />
+            </div>
+          </td>
+          <td>
+            <div class="col-md-12">
+              <input
+                type="date"
+                id="deliveredDate_{{ row.11 }}"
+                name="deliveredDate_{{ row.11 }}"
+                class="form-control"
+                placeholder="Data da entrega"
+                required
+              />
+            </div>
+          </td>
+          <td>
+            <div class="col-md-12">
+              <select
+                id="selectWarehouse_{{ row.11 }}"
+                name="selectWarehouse_{{ row.11 }}"
+                class="form-select"
+                aria-label="Selecionar armazém"
+                required
+              >
+                <option value="" selected disabled>Selecione armazém</option>
+                {% for row in warehouses_data %}
+                <option value="{{ row.0 }}">{{ row.1 }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="mt-md-4">
+      <a
+        id="btnGoBack"
+        class="btn btn-secondary"
+        href="/component/to_order_list/"
+        +
+        {{
+        order_id
+        }}
+        >Voltar</a
+      >
+      <button
+        id="btnSubmit"
+        class="btn btn-success float-end"
+        type="Submit"
+      >
+        Guardar
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-selected-components-register-delivery").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+  });
+
+  document
+    .getElementById("registerDeliveryForm")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const form = event.target;
+      const formData = new FormData(form);
+      fetch("/component/createOrderDeliveryComponent", {
+        method: "POST",
+        body: formData
+      })
+        .then((response) => {
+          if (response.status == 200) {
+            window.location.replace(
+              getBaseURL("/component") +
+                "/component/orders/detail/" +
+                document.getElementById("order_id").value
+            );
+          } else {
+            document
+              .getElementById("divError_message")
+              .classList.remove("d-none");
+            document.getElementById("error_message").innerText =
+              response.statusText;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+</script>
+{% endblock %}

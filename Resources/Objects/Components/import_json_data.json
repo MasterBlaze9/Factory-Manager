@@ -1,0 +1,52 @@
+[
+  {
+    "designation": "GeForce RTX 3070 Graphics Card",
+    "price": 699.99,
+    "supplier_name": "Fornecedor ABC"
+  },
+  {
+    "designation": "Intel Core i7-10700K CPU",
+    "price": 369.99,
+    "supplier_name": "Supplier 2"
+  },
+  {
+    "designation": "Crucial Ballistix RGB RAM (32GB)",
+    "price": 189.99,
+    "supplier_name": "Supplier 3"
+  },
+  {
+    "designation": "Crucial P5 2TB NVMe SSD",
+    "price": 249.99,
+    "supplier_name": "Fornecedor ABC"
+  },
+  {
+    "designation": "MSI MAG B550 TOMAHAWK Motherboard",
+    "price": 179.99,
+    "supplier_name": "Supplier 4"
+  },
+  {
+    "designation": "Noctua NH-D15 CPU Cooler",
+    "price": 89.99,
+    "supplier_name": "Fornecedor ABC"
+  },
+  {
+    "designation": "Seagate Barracuda 4TB HDD",
+    "price": 99.99,
+    "supplier_name": "Supplier 2"
+  },
+  {
+    "designation": "Fractal Design Meshify C Case",
+    "price": 99.99,
+    "supplier_name": "Supplier 3"
+  },
+  {
+    "designation": "Corsair RM750x 750W Gold PSU",
+    "price": 139.99,
+    "supplier_name": "Fornecedor ABC"
+  },
+  {
+    "designation": "Razer BlackWidow Elite Mechanical Keyboard",
+    "price": 159.99,
+    "supplier_name": "Supplier 4"
+  }
+]

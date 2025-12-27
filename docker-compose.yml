@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-factorydb}
+      POSTGRES_USER: ${POSTGRES_USER:-factoryuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-factorypass}
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./Resources/DDL Database:/sql"
+      - "./Resources/Objects:/sql_objects:ro"
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-factoryuser} -d ${POSTGRES_DB:-factorydb} -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongo:
+    image: mongo:6
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  web:
+    build:
+      context: .
+      dockerfile: Application/projetofinalbdII_grupo27/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./:/app
+    working_dir: /app/Application/projetofinalbdII_grupo27
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-factorydb}
+      POSTGRES_USER: ${POSTGRES_USER:-factoryuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-factorypass}
+      POSTGRES_HOST: ${POSTGRES_HOST:-db}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      MONGO_URI: ${MONGO_URI:-mongodb://mongo:27017/}
+      MONGO_DB_NAME: ${MONGO_DB_NAME:-projetofinal}
+    depends_on:
+      - db
+      - mongo
+    ports:
+      - "8000:8000"
+    command: bash -c "python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+
+volumes:
+  postgres_data:
+  mongo_data:

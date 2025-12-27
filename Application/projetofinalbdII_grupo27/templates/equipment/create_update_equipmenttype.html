@@ -1,0 +1,38 @@
+{% extends "base.html" %} {% block content %}
+
+<form method="post">
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+  >
+    {% csrf_token %}
+    <h1 class="h2">
+      {% if form.equipmenttype_id == 0 %}Criar novo {% else %}Editar {% endif %}tipo de equipamento
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group"></div>
+    </div>
+  </div>
+  <div class="mt-3 mb-3">
+    <label for="inputDesignation" class="form-label fw-semibold">Designação</label>
+    <input
+      id="inputDesignation"
+      name="designation"
+      type="text"
+      class="form-control"
+      placeholder="Designação"
+      maxlength="100"
+      value="{{ form.designation }}"
+      required
+    />
+  </div>
+  <a id="btnGoBack" class="btn btn-secondary me-3" href="/equipment/type/list/"
+    >Voltar</a
+  >
+  <input
+    class="btn btn-success float-end"
+    type="submit"
+    value="Guardar alterações"
+  />
+</form>
+
+{% endblock %}

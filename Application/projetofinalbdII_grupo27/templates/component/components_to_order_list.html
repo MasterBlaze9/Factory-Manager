@@ -1,0 +1,123 @@
+{% extends 'base.html' %} {% block content %}
+<form
+  action="{% url 'order_summary' %}"
+  method="POST"
+  onsubmit="return getSelectedComponents()"
+>
+  {% csrf_token %}
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+  >
+    <h1 class="h2">Encomendar componentes</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <button id="btnOrder" class="btn btn-success d-none" type="submit">
+        Encomendar
+      </button>
+    </div>
+  </div>
+  <div class="pt-md-3">
+    <input id="selected_components" name="selected_components" type="hidden" />
+    <table
+      id="table-components-to-order"
+      class="table table-striped"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th class="no-sort"></th>
+          <th>Id</th>
+          <th>Nome</th>
+          <th>Preço</th>
+          <th>Fornecedor</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in view_data %}
+        <tr>
+          <td>
+            <input
+              type="checkbox"
+              name="selected_items"
+              value="{{ row.3 }},{{ row.2 }}"
+            />
+          </td>
+          <td>{{ row.3 }}</td>
+          <td>{{ row.5|default:"-" }}</td>
+          <td>{{ row.6|default:"-" }}€</td>
+          <td>{{ row.4|default:"-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</form>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-components-to-order").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+  });
+
+  const checkboxes = document.querySelectorAll(
+    'input[type="checkbox"][name="selected_items"]'
+  );
+
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", checkIfAnySelected);
+  });
+
+  function checkIfAnySelected() {
+    const checkboxes = document.querySelectorAll(
+      'input[type="checkbox"][name="selected_items"]'
+    );
+
+    let isChecked = false;
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        isChecked = true;
+      }
+    });
+
+    isChecked
+      ? document.getElementById("btnOrder").classList.remove("d-none")
+      : document.getElementById("btnOrder").classList.add("d-none");
+
+    return isChecked;
+  }
+
+  window.addEventListener("DOMContentLoaded", checkIfAnySelected);
+
+  function getSelectedComponents() {
+    const checkboxes = document.querySelectorAll(
+      'input[type="checkbox"][name="selected_items"]'
+    );
+
+    let selectedComponents = "[";
+    checkboxes.forEach((checkbox) => {
+      if (checkbox.checked) {
+        const [selectedComponent_id, selectedSupplier_id] =
+          checkbox.value.split(",");
+        selectedComponents +=
+          '{"component_id":' +
+          selectedComponent_id +
+          ',"supplier_id":' +
+          selectedSupplier_id +
+          "},";
+      }
+    });
+    selectedComponents = selectedComponents.slice(0, -1);
+    selectedComponents += "]";
+
+    document.getElementById("selected_components").value = selectedComponents;
+  }
+</script>
+{% endblock %}

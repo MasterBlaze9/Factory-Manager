@@ -1,0 +1,38 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('type/list/', views.getEquipmentTypesList, name='list_equipmenttype'),
+    path('type/create/', views.createEquipmentType, name='create_equipmenttype'),
+    path('type/edit/<int:equipmenttype_id>',
+         views.editEquipmentType, name='edit_equipmenttype'),
+    path('type/delete/<int:equipmenttype_id>',
+         views.softDeleteEquipmentType, name='delete_equipmenttype'),
+    #!---- EQUIPAMENTOS ----!#
+    path('list/', views.getEquipmentsList, name='list_equipment'),
+    path('create/', views.create_equipment_view, name='create_equipment'),
+    path('edit/<int:equipment_id>',
+         views.editEquipment, name='edit_equipment'),
+    path('getEquipmentDetails/', views.getEquipmentDetails,
+         name='getEquipmentDetails'),
+    path('production/<int:equipment_id>',
+         views.equipmentProduction, name='production_equipment'),
+    path('equipment_production_summary/', views.equipmentProductionSummary,
+         name='equipment_production_summary'),
+    path('createEquipmentProduction', views.createEquipmentProduction,
+         name='createEquipmentProduction'),
+    path('delete/<int:equipment_id>',
+         views.softDeleteEquipment, name='delete_equipment'),
+    path('to_order_list/', views.getEquipmentsToOrderList,
+         name='list_equipment_to_order'),
+    path('client_order_summary/', views.clientOrderSummary,
+         name='client_order_summary'),
+    path('createClientOrder', views.createClientOrder,
+         name='createClientOrder'),
+    path('client_orders/list/', views.getClientOrdersList, name="client_orders_list"),
+    path('client_orders/detail/<int:client_order_id>/', views.getClientOrderDetail, name="client_order_detail"),
+    path('client_orders/register_delivery/', views.registerClientOrderDelivery, name="client_order_register_delivery"),
+    path('createClientOrderDeliveryEquipment', views.createClientOrderDeliveryEquipment,
+         name='createClientOrderDeliveryEquipment'),
+    path('getClientOrderInvoiceDetails/', views.getClientOrderInvoiceDetails, name="getClientOrderInvoiceDetails"),
+]

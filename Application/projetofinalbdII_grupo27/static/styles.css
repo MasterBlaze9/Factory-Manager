@@ -1,0 +1,63 @@
+.min-vh-without-nav-height {
+    min-height: calc(100vh - 53.41px) !important;
+}
+
+.hidden-column {
+    display: none;
+}
+
+.nav-link {
+    color: #fff !important;
+}
+
+.nav-link:hover {
+    color: #0a58ca !important;
+}
+
+.select-multi-components {
+    min-height: 25vh;
+    max-height: 45vh;
+}
+
+label {
+    font-weight: 600;
+}
+
+.error-container {
+    text-align: center;
+}
+
+.error-code {
+    font-size: 10rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.error-message {
+    font-size: 1.5rem;
+    margin-top: 20px;
+}
+
+.back-to-home {
+    margin-top: 30px;
+}
+
+.no-resize {
+    resize: none;
+}
+
+.custom-link {
+    cursor: pointer;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+}
+
+.ctn-extra-attributes {
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.ctn-extra-attributes .ctn-extra-attributes-hr__margin--half {
+    margin: 0.5rem 0;
+}

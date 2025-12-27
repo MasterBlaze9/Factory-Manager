@@ -1,0 +1,60 @@
+{% extends 'base.html' %} {% block content %}
+
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+>
+  <h1 class="h2">Lista de encomendas de equipamentos</h1>
+</div>
+<div class="pt-md-3">
+  <table id="table-client-orders" class="table table-striped" style="width: 100%">
+    <thead>
+      <tr>
+        <th>Encomenda</th>
+        <th>Preço</th>
+        <th>Encomendado para</th>
+        <th>Estado</th>
+        <th>Data</th>
+        <th class="no-sort">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in view_data %}
+      <tr>
+        <td>{{ row.1 }}</td>
+        <td>{{ row.2|default:"-" }}€</td>
+        <td>{{ row.7.strip|default:"-" }}</td>
+        {% if row.5 == 'Por entregar' %}
+        <td class="text-danger">{{ row.5.strip|default:"-" }}</td>
+        {% elif row.5 == 'Parcialmente entregue' %}
+        <td class="text-warning">{{ row.5.strip|default:"-" }}</td>
+        {% else %}
+        <td class="text-success">{{ row.5.strip|default:"-" }}</td>
+        {% endif %}
+        <td>{{ row.3|date:'d-m-Y'|default:"-" }}</td>
+        <td>
+          <a class="btn btn-primary" href="{% url 'client_order_detail' row.0 %}"
+            >Visualizar detalhes</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-client-orders").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+  });
+</script>
+{% endblock %}

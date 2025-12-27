@@ -1,0 +1,4 @@
+id,designation,price,is_active,created_on,created_by
+13,Component X,50.00,True,2025-11-09 19:24:18.014570,1
+14,Component Y,75.00,True,2025-11-09 19:24:18.014570,1
+15,Component Z,100.00,True,2025-11-09 19:24:18.014570,1

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content_no_session %}
+{% if not user.is_authenticated %}
+<div class="container py-5">
+	<div class="row justify-content-center">
+		<div class="col-md-8 text-center">
+			<h1 class="mb-4">Welcome to TechHaven Factory Management</h1>
+			<p class="lead text-muted mb-4">A comprehensive solution for managing your factory operations</p>
+			<a href="/user/login/" class="btn btn-primary btn-lg">Login to Continue</a>
+		</div>
+	</div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<div class="container py-4">
+	<h1 class="mb-4">Factory Management Dashboard</h1>
+	<p class="text-muted">Welcome, {{ user.username }}! Choose a section to explore:</p>
+
+	<div class="row g-3">
+		<div class="col-12 col-md-6 col-lg-4">
+			<a class="card h-100 text-decoration-none" href="/client/">
+				<div class="card-body">
+					<h5 class="card-title">Clients</h5>
+					<p class="card-text">Manage clients and orders.</p>
+				</div>
+			</a>
+		</div>
+		<div class="col-12 col-md-6 col-lg-4">
+			<a class="card h-100 text-decoration-none" href="/component/">
+				<div class="card-body">
+					<h5 class="card-title">Components</h5>
+					<p class="card-text">Browse and maintain components.</p>
+				</div>
+			</a>
+		</div>
+		<div class="col-12 col-md-6 col-lg-4">
+			<a class="card h-100 text-decoration-none" href="/equipment/">
+				<div class="card-body">
+					<h5 class="card-title">Equipment</h5>
+					<p class="card-text">Equipment catalog and production.</p>
+				</div>
+			</a>
+		</div>
+		<div class="col-12 col-md-6 col-lg-4">
+			<a class="card h-100 text-decoration-none" href="/production/">
+				<div class="card-body">
+					<h5 class="card-title">Production</h5>
+					<p class="card-text">Production orders and tracking.</p>
+				</div>
+			</a>
+		</div>
+		<div class="col-12 col-md-6 col-lg-4">
+			<a class="card h-100 text-decoration-none" href="/supplier/">
+				<div class="card-body">
+					<h5 class="card-title">Suppliers</h5>
+					<p class="card-text">Suppliers and supply components.</p>
+				</div>
+			</a>
+		</div>
+		<div class="col-12 col-md-6 col-lg-4">
+			<a class="card h-100 text-decoration-none" href="/user/">
+				<div class="card-body">
+					<h5 class="card-title">Users</h5>
+					<p class="card-text">User accounts and roles.</p>
+				</div>
+			</a>
+		</div>
+		<div class="col-12 col-md-6 col-lg-4">
+			<a class="card h-100 text-decoration-none" href="/warehouse/">
+				<div class="card-body">
+					<h5 class="card-title">Warehouse</h5>
+					<p class="card-text">Stock and warehouse components.</p>
+				</div>
+			</a>
+		</div>
+	</div>
+
+	<div class="mt-4">
+		<a href="/admin/" class="btn btn-primary">Admin Panel</a>
+	</div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block content %}
+
+<form method="post">
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+  >
+    {% csrf_token %}
+    <h1 class="h2">
+      {% if component.component_id == 0 %}Criar novo {% else %}Editar {% endif %}componente
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group me-2"></div>
+    </div>
+  </div>
+  {% if error_message %}
+  <div class="mt-3 mb-3">
+    <h6 class="text-danger">{{ error_message }}</h6>
+  </div>
+  {% endif %}
+  <div class="mt-3 mb-3">
+    <label for="inputDesignation" class="form-label fw-semibold">Designação</label>
+    <input
+      id="inputDesignation"
+      name="designation"
+      type="text"
+      class="form-control"
+      placeholder="Designação"
+      maxlength="100"
+      value="{{ component.designation }}"
+      required
+    />
+  </div>
+  <div class="mb-3">
+    <label for="inputPrice" class="form-label fw-semibold">Preço</label>
+    <input
+      id="inputPrice"
+      name="price"
+      type="number"
+      class="form-control"
+      placeholder="Preço"
+      value="{{ component.price }}"
+      required
+    />
+  </div>
+  <a
+    id="btnGoBack"
+    class="btn btn-secondary me-3"
+    href="/component/list/"
+    >Voltar</a
+  >
+  <input
+    class="btn btn-success float-end"
+    type="submit"
+    value="Guardar alterações"
+  />
+</form>
+
+{% endblock %}

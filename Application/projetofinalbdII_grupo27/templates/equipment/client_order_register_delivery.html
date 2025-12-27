@@ -1,0 +1,139 @@
+{% extends 'base.html' %} {% block content %}
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+>
+  <h1 class="h2">Registar receção de equipamentos</h1>
+  <div class="btn-toolbar mb-2 mb-md-0"></div>
+</div>
+<div id="divError_message" class="mt-3 mb-3 d-none">
+  <h6 id="error_message" class="text-danger"></h6>
+</div>
+<div class="pt-3">
+  <form id="registerDeliveryForm" method="POST">
+    {% csrf_token %}
+    <input type="hidden" id="client_order_id" name="client_order_id" value="{{ client_order_id }}" />
+    <table
+      id="table-selected-equipments-register-delivery"
+      class="table table-striped"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th>Equipamento</th>
+          <th>Preço unitário</th>
+          <th>Valor total</th>
+          <th>Quantidade recebida</th>
+          <th>Quantidade a receber</th>
+          <th>Data da entrega</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in equipments_to_deliver %}
+        <tr>
+          <td>{{ row.1.strip|default:"-" }}</td>
+          <td>{{ row.5|default:"-" }}€</td>
+          <td>{{ row.6|default:"-" }}€</td>
+          <td>{{ row.3|default:0 }} de {{ row.2 }}</td>
+          <td>
+            <div class="col-md-12">
+              <input
+                type="hidden"
+                name="client_order_equipment_id_{{ row.9 }}"
+                value="{{ row.9 }}"
+              />
+              <input
+                class="form-control equipment-quantity default-value-1"
+                name="deliveredQuantity_{{ row.9 }}"
+                type="number"
+                value="1"
+                min="1"
+                max="{{ row.4 }}"
+                required
+              />
+            </div>
+          </td>
+          <td>
+            <div class="col-md-12">
+              <input
+                type="date"
+                id="deliveredDate_{{ row.9 }}"
+                name="deliveredDate_{{ row.9 }}"
+                class="form-control"
+                placeholder="Data da entrega"
+                required
+              />
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="mt-md-4">
+      <a
+        id="btnGoBack"
+        class="btn btn-secondary"
+        href="/equipment/client_orders/list"
+        +
+        {{
+        client_order_id
+        }}
+        >Voltar</a
+      >
+      <button
+        id="btnSubmit"
+        class="btn btn-success float-end"
+        type="Submit"
+      >
+        Guardar
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-selected-equipments-register-delivery").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+  });
+
+  document
+    .getElementById("registerDeliveryForm")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const form = event.target;
+      const formData = new FormData(form);
+      fetch("/equipment/createClientOrderDeliveryEquipment", {
+        method: "POST",
+        body: formData
+      })
+        .then((response) => {
+          if (response.status == 200) {
+            window.location.replace(
+              getBaseURL("/equipment") +
+                "/equipment/client_orders/detail/" +
+                document.getElementById("client_order_id").value
+            );
+          } else {
+            document
+              .getElementById("divError_message")
+              .classList.remove("d-none");
+            document.getElementById("error_message").innerText =
+              response.statusText;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+</script>
+{% endblock %}

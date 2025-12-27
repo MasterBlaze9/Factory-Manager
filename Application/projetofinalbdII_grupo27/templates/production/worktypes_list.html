@@ -1,0 +1,63 @@
+{% extends 'base.html' %} {% block content %}
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+>
+  <h1 class="h2">Lista de tipos de mão de obra</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="">
+      <a
+        class="btn btn-primary my-4 float-end"
+        href="{% url 'create_worktype' %}"
+        >Criar novo tipo de mão de obra</a
+      >
+    </div>
+  </div>
+</div>
+
+    <table id="table-worktypes" class="table table-striped" style="width: 100%">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Nome</th>
+          <th>Preço/hora</th>
+          <th class="no-sort">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+        <tr>
+          <td>{{ row.0 }}</td>
+          <td>{{ row.1|default:"-" }}</td>
+          <td>{{ row.2|default:"-" }} €</td>
+          <td>
+            <a class="btn btn-primary" href="{% url 'edit_worktype' row.0 %}"
+              >Editar</a
+            >
+            <a class="btn btn-danger" href="{% url 'delete_worktype' row.0 %}"
+              >Eliminar</a
+            >
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-worktypes").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+  });
+</script>
+{% endblock %}

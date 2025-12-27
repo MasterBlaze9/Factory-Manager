@@ -1,0 +1,235 @@
+{% extends 'base.html' %} {% block content %}
+
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+>
+  <h1 class="h2">Lista de equipamentos</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <div class="btn-group">
+      <a
+        class="btn btn-primary my-md-4 float-end"
+        href="{% url 'create_equipment' %}"
+        >Criar novo equipamento</a
+      >
+    </div>
+  </div>
+</div>
+<div class="pt-md-3">
+  {% csrf_token %}
+  <table id="table-equipment" class="table table-striped" style="width: 100%">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Designação</th>
+        <th>Descrição</th>
+        <th>Tipo</th>
+        <th>Preço</th>
+        <th class="no-sort">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+      <tr>
+        <td>{{ row.0 }}</td>
+        <td>
+          <a
+            id="btnSeeEquipmentDetails_{{ row.0 }}"
+            class="custom-link"
+            onclick="getEquipmentDetails({{ row.0 }}, '{{ row.1 }}')"
+            >{{ row.1|default:"-" }}</a
+          >
+        </td>
+        {% if row.2|length > 70 %}
+        <td
+          data-bs-toggle="tooltip"
+          data-bs-placement="top"
+          title="{{ row.2 }}"
+        >
+          {{ row.2|default:"-"|truncatechars:70 }}
+        </td>
+        {% else %}
+        <td>{{ row.2|default:"-" }}</td>
+        {% endif %}
+        <td>{{ row.4|default:"-" }}</td>
+        <td>{{ row.5|default:"-" }}€</td>
+        <td>
+          <a class="btn btn-primary" href="{% url 'edit_equipment' row.0 %}"
+            >Editar</a
+          >
+          <a
+            class="btn btn-primary"
+            href="{% url 'production_equipment' row.0 %}"
+            >Produzir</a
+          >
+          <a class="btn btn-danger" href="{% url 'delete_equipment' row.0 %}"
+            >Eliminar</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Modals -->
+  <div
+    class="modal modal-xl fade"
+    id="equipmentDetailsModal"
+    tabindex="-1"
+    aria-labelledby="equipmentDetailsModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title" id="equipmentDetailsModalLabel"></h3>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div id="equipmentDetailsModalBody" class="modal-body">
+          <div class="row">
+            <div class="col-12">
+              <label for="equipment_description" class="form-label"
+                >Descrição</label
+              >
+              <div>
+                <span id="equipment_description"></span>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-6">
+              <label for="equipment_type" class="form-label">Tipo</label>
+              <div>
+                <span id="equipment_type"></span>
+              </div>
+            </div>
+            <div class="col-6">
+              <label for="equipment_price" class="form-label">Preço</label>
+              <div>
+                <span id="equipment_price"></span>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <div id="divExtraAttributes" class="col-12 d-none">
+                <label
+                  id="equipment_extra_attribute_label"
+                  for="equipment_extra_attribute_value"
+                  class="form-label"
+                ></label>
+                <div>
+                  <span id="equipment_extra_attribute_value"></span>
+                </div>
+              </div>
+            </div>
+            <div class="row mt-3">
+              <h3>Produções</h3>
+              <hr />
+              <table
+                id="table-equipment-productions"
+                class="table table-striped"
+                style="width: 100%"
+              >
+                <thead>
+                  <tr>
+                    <th>Equipamento</th>
+                    <th>Tipo de mão de obra</th>
+                    <th>Armazenado em</th>
+                    <th>Stock</th>
+                    <th>Preço de produção</th>
+                    <th>Componentes</th>
+                  </tr>
+                </thead>
+                <tbody id="table-equipment-productions-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-equipment").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+  });
+
+  function getEquipmentDetails(equipment_id, equipment_designation) {
+    $.ajax({
+      url: "/equipment/getEquipmentDetails/",
+      type: "GET",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}"
+      },
+      data: {
+        equipment_id: equipment_id
+      },
+      success: function (data) {
+        data = JSON.parse(data);
+        console.log(data);
+
+        document.getElementById("equipmentDetailsModalLabel").innerHTML =
+          equipment_designation;
+
+        document.getElementById("equipment_description").innerHTML =
+          data["equipment"][2];
+
+        document.getElementById("equipment_type").innerHTML =
+          data["equipment"][4];
+
+        document.getElementById("equipment_price").innerHTML =
+          data["equipment"][5] + "€";
+
+        if (data["equipment_mongodb"] != null) {
+          document
+            .getElementById("divExtraAttributes")
+            .classList.remove("d-none");
+
+          document.getElementById("equipment_extra_attribute_label").innerHTML =
+            data["equipment_mongodb"][0];
+          document.getElementById("equipment_extra_attribute_value").innerHTML =
+            data["equipment_mongodb"][1];
+        } else
+          document.getElementById("divExtraAttributes").classList.add("d-none");
+
+        const tableBody = document.getElementById(
+          "table-equipment-productions-tbody"
+        );
+        tableBody.innerHTML = "";
+        if (data["equipment_productions"].length > 0) {
+          var values_positions = [2, 4, 6, 7, 8, 9];
+          data["equipment_productions"].forEach((item) => {
+            const row = document.createElement("tr");
+            for (let i = 0; i < values_positions.length; i++) {
+              const column = document.createElement("td");
+              column.textContent = item[`${values_positions[i]}`];
+              row.appendChild(column);
+            }
+
+            tableBody.appendChild(row);
+          });
+        }
+
+        $("#equipmentDetailsModal").modal("show");
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  }
+</script>
+{% endblock %}

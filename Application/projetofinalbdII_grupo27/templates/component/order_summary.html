@@ -1,0 +1,144 @@
+{% extends 'base.html' %} {% block content %}
+<form id="orderForm" method="POST">
+  {% csrf_token %}
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+  >
+    <h1 class="h2">Resumo da encomenda</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="">
+        <h3 id="totalPrice" class="d-none"></h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-3">
+    <table
+      id="table-selected-components"
+      class="table table-striped"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th>Componente</th>
+          <th>Fornecedor</th>
+          <th>Preço</th>
+          <th>Quantidade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order_summary_item in order_summary %} {% for row in order_summary_item %}
+        <tr>
+          <td>{{ row.1 }}</td>
+          <td>{{ row.3 }}</td>
+          <td class="component-price">{{ row.4 }}€</td>
+          <td>
+            <div class="col-md-6">
+              <input
+                type="hidden"
+                name="component_supplier_id_{{ row.0 }}_{{ row.2 }}"
+                value="{{ row.0 }}"
+              />
+              <input
+                type="hidden"
+                name="component_name_{{ row.0 }}_{{ row.2 }}"
+                value="{{ row.0 }}"
+              />
+              <input
+                type="hidden"
+                name="component_price_{{ row.0 }}_{{ row.2 }}"
+                value="{{ row.4 }}"
+              />
+              <input
+                onchange="updateTotalPrice()"
+                class="form-control component-quantity default-value-1"
+                name="component_quantity_{{ row.0 }}_{{ row.2 }}"
+                type="number"
+                value="1"
+                min="1"
+              />
+            </div>
+          </td>
+        </tr>
+        {% endfor %} {% endfor %}
+      </tbody>
+    </table>
+    <div class="mt-md-4">
+      <a
+        id="btnGoBack"
+        class="btn btn-secondary"
+        href="/component/to_order_list/"
+        >Voltar</a
+      >
+      <button
+        id="btnSubmit"
+        class="btn btn-success float-end"
+        type="Submit"
+      >
+        Submeter encomenda
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-selected-components").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+
+    updateTotalPrice();
+  });
+
+  document
+    .getElementById("orderForm")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const form = event.target;
+      const formData = new FormData(form);
+
+      fetch("/component/createOrder", {
+        method: "POST",
+        body: formData
+      })
+        .then((response) => {
+          window.location.replace(
+            getBaseURL("/component") + "/component/orders/list/"
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+
+  function updateTotalPrice() {
+    const priceElements = document.getElementsByClassName("component-price");
+    const quantityElements =
+      document.getElementsByClassName("component-quantity");
+    const totalPriceElement = document.getElementById("totalPrice");
+
+    let quantity,
+      componentTotalPrice,
+      totalPrice = 0;
+    Object.keys(priceElements).forEach((key) => {
+      quantity = checkDefaultVal(quantityElements[key].value);
+      componentTotalPrice = priceElements[key].innerText.replace("€", "") * quantity;
+
+      totalPrice += componentTotalPrice;
+    });
+
+    totalPriceElement.innerHTML =
+      "Preço total: " + parseFloat(totalPrice).toFixed(2) + "€";
+    totalPriceElement.classList.remove("d-none");
+  }
+</script>
+{% endblock %}

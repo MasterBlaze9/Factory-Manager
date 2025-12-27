@@ -1,0 +1,248 @@
+{% extends 'base.html' %} {% block content %}
+
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+>
+  <h1 class="h2">Lista de componentes</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    {% if user.is_staff %}
+    <div class="">
+      <a
+        class="btn btn-primary my-4 float-end"
+        href="{% url 'create_component' %}"
+        >Criar novo componente</a
+      >
+      <a
+        class="btn btn-primary my-4 ms-3 me-3 float-end"
+        data-bs-toggle="modal"
+        data-bs-target="#exportComponentsModal"
+        >Exportar componentes</a
+      >
+      <a
+        class="btn btn-primary my-4 float-end"
+        data-bs-toggle="modal"
+        data-bs-target="#importComponentsModal"
+        >Importar componentes</a
+      >
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% if error_message %}
+<div class="mt-3 mb-3">
+  <h6 class="text-danger">{{ error_message }}</h6>
+</div>
+{% endif %}
+<div class="pt-md-3">
+  <table id="table-components" class="table table-striped" style="width: 100%">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Nome</th>
+        <th>Preço</th>
+        <th>Fornecedor(es)</th>
+        <th>Criado em</th>
+        <th class="no-sort">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in components_list %}
+      <tr>
+        <td>{{ row.0 }}</td>
+        <td>{{ row.1|default:"-" }}</td>
+        <td>{{ row.2|default:"-" }}€</td>
+        <td>{{ row.3|default:"-" }}</td>
+        <td>{{ row.4|date:"d-m-y H:m:s" }}</td>
+        <td>
+          <a
+            class="btn btn-primary"
+            href="{% url 'edit_component' row.0 %}"
+            >Editar</a
+          >
+          <a
+            class="btn btn-danger"
+            href="{% url 'delete_component' row.0 %}"
+            >Eliminar</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Modals -->
+  <div
+    class="modal fade"
+    id="importComponentsModal"
+    tabindex="-1"
+    aria-labelledby="importComponentsModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="importComponentsModalLabel">
+            Importar componentes
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <form
+          method="post"
+          action="{% url 'handle_imported_components' %}"
+          enctype="multipart/form-data"
+        >
+          <div class="modal-body">
+            <div class="">
+              {% csrf_token %}
+              <div
+                id="divImportComponentsModalErrorMessage"
+                class="mb-3 d-none"
+              >
+                <h6 class="text-danger">
+                  Por favor, insira uma extensão válida
+                </h6>
+              </div>
+              <label for="importComponentsFileInput" class="form-label"
+                >Selecionar ficheiro a importar</label
+              >
+              <input
+                id="importComponentsFileInput"
+                class="form-control"
+                name="importComponentsFileInput"
+                type="file"
+                accept=".json,.xml"
+                required
+              />
+              <span class="form-text text-muted"
+                >Extensões permitidas: .json; .xml</span
+              >
+            </div>
+          </div>
+          <div class="modal-footer">
+            <input
+              id="btnImportComponents"
+              class="btn btn-success float-end"
+              type="submit"
+              value="Importar"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="exportComponentsModal"
+    tabindex="-1"
+    aria-labelledby="exportComponentsModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exportComponentsModalLabel">
+            Exportar componentes
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <form
+          method="post"
+          action="{% url 'handle_export_components' %}"
+          enctype="multipart/form-data"
+        >
+          <div class="modal-body">
+            <div class="">
+              {% csrf_token %}
+              <label for="exportComponentsFileInput" class="form-label"
+                >Selecionar tipo de ficheiro a exportar</label
+              >
+              <div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inlineRadioExportExtension"
+                    id="inlineRadioExport_JSON"
+                    checked
+                    value="JSON"
+                  />
+                  <label class="form-check-label" for="inlineRadioExport_JSON"
+                    >JSON</label
+                  >
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="inlineRadioExportExtension"
+                    id="inlineRadioExport_XML"
+                    value="XML"
+                  />
+                  <label class="form-check-label" for="inlineRadioExport_XML"
+                    >XML</label
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <input
+              class="btn btn-success float-end"
+              type="submit"
+              value="Exportar"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!---->
+</div>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-components").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+  });
+
+  document
+    .getElementById("importComponentsFileInput")
+    .addEventListener("change", function () {
+      var allowedExtensions = /(\.json|\.xml)$/i;
+      var fileInput = this;
+
+      if (!allowedExtensions.test(fileInput.value)) {
+        document
+          .getElementById("divImportComponentsModalErrorMessage")
+          .classList.remove("d-none");
+        fileInput.value = "";
+        document.getElementById("btnImportComponents").disabled = true;
+      } else {
+        document
+          .getElementById("divImportComponentsModalErrorMessage")
+          .classList.add("d-none");
+        document.getElementById("btnImportComponents").disabled = false;
+      }
+    });
+</script>
+{% endblock %}

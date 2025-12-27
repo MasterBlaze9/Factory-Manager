@@ -1,0 +1,51 @@
+{% extends 'base.html' %} {% block content %}
+<form method="post">
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+  >
+    {% csrf_token %}
+    <h1 class="h2">
+      {% if form.worktype_id == 0 %}Criar novo {% else %}Editar {% endif %}tipo de mão de obra
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="btn-group"></div>
+    </div>
+  </div>
+  <div class="mt-3 mb-3">
+    <label for="inputDesignation" class="form-label fw-semibold"
+      >Designação</label
+    >
+    <input
+      id="inputDesignation"
+      name="designation"
+      type="text"
+      class="form-control"
+      placeholder="Designação"
+      maxlength="100"
+      value="{{ form.designation }}"
+    />
+  </div>
+  <div class="mb-3">
+    <label for="inputCost" class="form-label fw-semibold">Custo por hora</label>
+    <input
+      id="inputCost"
+      name="cost"
+      type="number"
+      class="form-control"
+      placeholder="Custo por hora"
+      value="{{ form.cost }}"
+    />
+  </div>
+  <a
+    id="btnGoBack"
+    class="btn btn-secondary me-3"
+    href="{% url 'list_worktype' %}"
+    >Voltar</a
+  >
+  <input
+    class="btn btn-success float-end"
+    type="submit"
+    value="Guardar alterações"
+  />
+</form>
+{% endblock %}

@@ -1,0 +1,191 @@
+{% extends 'base.html' %} {% block content %}
+<form id="clientOrderForm" method="POST">
+  {% csrf_token %}
+  <div
+    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center border-bottom"
+  >
+    <h1 class="h2">Resumo da encomenda</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+      <div class="">
+        <h3 id="totalPrice" class="d-none"></h3>
+      </div>
+    </div>
+  </div>
+  <div id="divError_message" class="mt-3 mb-3 d-none">
+    <h6 id="error_message" class="text-danger"></h6>
+  </div>
+  <div class="pt-3">
+    <div class="col-4 mb-3">
+      <label for="select_client" class="form-label"
+        >Cliente que encomendou</label
+      >
+      <select
+        class="form-select"
+        id="select_client"
+        name="select_client"
+        required
+      >
+        <option value="" selected>Escolha um cliente</option>
+        {% for row in clients %}
+        <option value="{{ row.0 }}">{{ row.1 }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <table
+      id="table-selected-equipments"
+      class="table table-striped"
+      style="width: 100%"
+    >
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Designação</th>
+          <th>Descrição</th>
+          <th>Tipo</th>
+          <th>Componentes</th>
+          <th>Preço</th>
+          <th>Stock</th>
+          <th>Quantidade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in client_order_summary %}
+        <tr>
+          <td>{{ row.0 }}</td>
+          <td>{{ row.1.strip|default:"-" }}</td>
+          {% if row.2|length > 70 %}
+          <td
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="{{ row.2 }}"
+          >
+            {{ row.2|default:"-"|truncatechars:70 }}
+          </td>
+          {% else %}
+          <td>{{ row.2|default:"-" }}</td>
+          {% endif %}
+          <td>{{ row.4.strip|default:"-" }}</td>
+          {% if row.8|length > 70 %}
+          <td
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="{{ row.8 }}"
+          >
+            {{ row.8|default:"-"|truncatechars:70 }}
+          </td>
+          {% else %}
+          <td>{{ row.8|default:"-" }}</td>
+          {% endif %}
+          <td class="equipment-price" price="{{ row.5 }}">
+            {{ row.5|default:"-" }}€
+          </td>
+          <td>{{ row.7|default:"-" }}</td>
+          <td>
+            <input
+              type="hidden"
+              name="equipment_production_id_{{ row.0 }}_{{ row.6 }}"
+              value="{{ row.0 }}"
+            />
+            <input
+              type="hidden"
+              name="equipment_price_{{ row.0 }}_{{ row.6 }}"
+              value="{{ row.5 }}"
+            />
+            <input
+              onchange="updateTotalPrice()"
+              class="form-control equipment-quantity default-value-1"
+              name="equipment_quantity_{{ row.0 }}_{{ row.6 }}"
+              type="number"
+              value="1"
+              min="1"
+              max="{{ row.7 }}"
+            />
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="mt-md-4">
+      <a
+        id="btnGoBack"
+        class="btn btn-secondary"
+        href="/equipment/to_order_list/"
+        >Voltar</a
+      >
+      <button id="btnSubmit" class="btn btn-success float-end" type="Submit">
+        Submeter encomenda
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %} {% block extra_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#table-selected-equipments").DataTable({
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/pt-PT.json"
+      },
+      columnDefs: [
+        {
+          targets: "no-sort",
+          orderable: false
+        }
+      ]
+    });
+
+    updateTotalPrice();
+  });
+
+  document
+    .getElementById("clientOrderForm")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const form = event.target;
+      const formData = new FormData(form);
+
+      fetch("/equipment/createClientOrder", {
+        method: "POST",
+        body: formData
+      })
+        .then((response) => {
+          if (response.status == 200) {
+            window.location.replace(
+              getBaseURL("/equipment") + "/equipment/client_orders/list/"
+            );
+          } else {
+            document
+              .getElementById("divError_message")
+              .classList.remove("d-none");
+            document.getElementById("error_message").innerText =
+              response.statusText;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+
+  function updateTotalPrice() {
+    const priceElements = document.getElementsByClassName("equipment-price");
+    const quantityElements =
+      document.getElementsByClassName("equipment-quantity");
+    const totalPriceElement = document.getElementById("totalPrice");
+
+    let quantity,
+      equipmentTotalPrice,
+      totalPrice = 0;
+    Object.keys(priceElements).forEach((key) => {
+      quantity = checkDefaultVal(quantityElements[key].value);
+      equipmentTotalPrice =
+        priceElements[key].innerText.replace("€", "") * quantity;
+
+      totalPrice += equipmentTotalPrice;
+    });
+
+    totalPriceElement.innerHTML =
+      "Preço total: " + parseFloat(totalPrice).toFixed(2) + "€";
+    totalPriceElement.classList.remove("d-none");
+  }
+</script>
+{% endblock %}

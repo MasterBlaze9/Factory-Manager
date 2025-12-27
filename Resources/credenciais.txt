@@ -1,0 +1,32 @@
+Criar Super User:
+	-> py manage.py createsuperuser
+	
+	-> User criado:
+		-> Admin
+			-> admin
+			-> admin@techhaven.com
+			-> admin123
+		-> User normal
+			-> rafamonteiro@techhaven.com
+			-> admin123##
+-> admin123!
+
+	Servidor Postgres
+
+		IP: 193.137.7.56 
+		Login: aluno9 
+		Password: Aluno9#8513
+
+	Site para aceder à BD
+		http://193.137.7.56/pgadmin4/login?next=%2Fpgadmin4%2Fbrowser%2F
+
+	Login: estgv19482@alunos.estgv.ipv.pt
+	Password: Aluno9#8513
+
+IMPORTANTE => Instalar ssh tunnel com pip install sshtunnel
+
+MONGO DB:
+	-> cluster: mongodb+srv://admin:KbNXSZ53pxwl3Ac3@clusterbdii.44szrd6.mongodb.net/
+	-> cluster user:
+		-> username: admin
+		-> Password: KbNXSZ53pxwl3Ac3
