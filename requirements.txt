@@ -4,3 +4,4 @@ djongo
 django-bootstrap-v5
 pymongo
 sshtunnel
+gunicorn
