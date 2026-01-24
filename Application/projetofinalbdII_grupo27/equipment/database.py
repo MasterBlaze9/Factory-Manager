@@ -96,9 +96,11 @@ def equipment_Create(is_admin, designation, description, equipmenttype_id, price
 
         cursor.execute("SELECT fncreateequipment(%s, %s, %s, %s, %s);",
                        (designation, description, equipmenttype_id, price, created_by))
+        new_id = cursor.fetchone()[0]
+        return new_id, ""
     except Exception as e:
         print(f"Database error: {e}")
-        return []
+        return None, str(e)
 
 
 def equipment_GetLastEquipmentId(is_admin):

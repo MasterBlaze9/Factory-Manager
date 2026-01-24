@@ -48,12 +48,12 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-factorypass}
       POSTGRES_HOST: ${POSTGRES_HOST:-db}
       POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      MONGO_URI: ${MONGO_URI:-mongodb://mongo:27017/}
+      MONGO_URI: ${MONGO_URI:-mongodb+srv://ruinunoss_db_user:3Ij2zQZN7deSXTIf@blaze-techhaven.efnylni.mongodb.net/}
       MONGO_DB_NAME: ${MONGO_DB_NAME:-projetofinal}
       # Superuser defaults (can be overridden in .env)
       DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-admin}
       DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-admin@example.com}
-      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-adminpass}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-admin123}
     depends_on:
       db:
         condition: service_healthy

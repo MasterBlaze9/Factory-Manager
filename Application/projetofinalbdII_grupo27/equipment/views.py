@@ -91,10 +91,10 @@ def create_equipment_view(request):
         extra_attribute_label = request.POST.get('extra_attribute_label')
         extra_attribute_value = request.POST.get('extra_attribute_value')
 
-        error_message = equipment_Create(
+        new_id, error_message = equipment_Create(
             request.user.is_staff, designation, description, equipmenttype_id, price,  request.user.id)
 
-        if error_message != None and error_message != "":
+        if error_message:
             form = {
                 "equipment": {
                     "equipment_id": 0,
@@ -110,48 +110,49 @@ def create_equipment_view(request):
             }
             return render(request, './equipment/create_update_equipment.html', form)
 
-        if extra_attribute_label != "":
-            if extra_attribute_value != "":
-                extra_attribute_value_splitted = extra_attribute_value.split(
-                    ",")
+        if new_id is not None:
+            if extra_attribute_label != "":
+                if extra_attribute_value != "":
+                    extra_attribute_value_splitted = extra_attribute_value.split(
+                        ",")
 
-                if len(extra_attribute_value_splitted) > 1:
-                    extra_values = []
-                    for i in range(len(extra_attribute_value_splitted)):
-                        extra_values.append(extra_attribute_value_splitted[i])
+                    if len(extra_attribute_value_splitted) > 1:
+                        extra_values = []
+                        for i in range(len(extra_attribute_value_splitted)):
+                            extra_values.append(extra_attribute_value_splitted[i])
 
-                    doc = {
-                        "postgres_id": equipment_GetLastEquipmentId(request.user.is_staff)[0],
-                        extra_attribute_label: extra_values
-                    }
+                        doc = {
+                            "postgres_id": new_id,
+                            extra_attribute_label: extra_values
+                        }
+                    else:
+                        doc = {
+                            "postgres_id": new_id,
+                            extra_attribute_label: extra_attribute_value
+                        }
                 else:
-                    doc = {
-                        "postgres_id": equipment_GetLastEquipmentId(request.user.is_staff)[0],
-                        extra_attribute_label: extra_attribute_value
+                    form = {
+                        "equipment": {
+                            "equipment_id": 0,
+                            "designation": designation,
+                            "description": description,
+                            "price": price,
+                            "equipmenttype_id": equipmenttype_id,
+                            "extra_attribute_label": extra_attribute_label,
+                            "extra_attribute_value": extra_attribute_value
+                        },
+                        "equipment_types": equipmenttype_GetList(request.user.is_staff),
+                        "error_message": "Valor do atributo extra não pode ser vazio!"
                     }
+
+                    return render(request, './equipment/create_update_equipment.html', form)
             else:
-                form = {
-                    "equipment": {
-                        "equipment_id": 0,
-                        "designation": designation,
-                        "description": description,
-                        "price": price,
-                        "equipmenttype_id": equipmenttype_id,
-                        "extra_attribute_label": extra_attribute_label,
-                        "extra_attribute_value": extra_attribute_value
-                    },
-                    "equipment_types": equipmenttype_GetList(request.user.is_staff),
-                    "error_message": "Valor do atributo extra não pode ser vazio!"
+                doc = {
+                    "postgres_id": new_id
                 }
 
-                return render(request, './equipment/create_update_equipment.html', form)
-        else:
-            doc = {
-                "postgres_id": equipment_GetLastEquipmentId(request.user.is_staff)[0]
-            }
-
-        bson_doc = SON(doc)
-        mongodb_createEquipment(bson_doc)
+            bson_doc = SON(doc)
+            mongodb_createEquipment(bson_doc)
 
         return redirect('list_equipment')
 
@@ -249,7 +250,7 @@ def editEquipment(request, equipment_id):
             else:
                 form = {
                     "equipment": {
-                        "equipment_id": 0,
+                        "equipment_id": equipment_id,
                         "designation": designation,
                         "description": description,
                         "price": price,

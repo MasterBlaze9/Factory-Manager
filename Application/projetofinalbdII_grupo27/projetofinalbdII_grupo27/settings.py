@@ -84,31 +84,37 @@ WSGI_APPLICATION = 'projetofinalbdII_grupo27.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 # Use environment variables for Docker setup
-POSTGRES_DB = os.environ.get('POSTGRES_DB', 'factorydb')
-POSTGRES_USER = os.environ.get('POSTGRES_USER', 'factoryuser')
-POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD', 'factorypass')
-POSTGRES_HOST = os.environ.get('POSTGRES_HOST', 'db')
-POSTGRES_PORT = os.environ.get('POSTGRES_PORT', '5432')
-MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://mongo:27017/')
+## Neon DB credentials are hardcoded below; POSTGRES_* env vars not needed
+# Default Mongo points to Atlas; override MONGO_URI/MONGO_DB_NAME via env if needed.
+MONGO_URI = os.environ.get(
+    'MONGO_URI',
+    'mongodb+srv://ruinunoss_db_user:3Ij2zQZN7deSXTIf@blaze-techhaven.efnylni.mongodb.net/'
+)
 MONGO_DB_NAME = os.environ.get('MONGO_DB_NAME', 'projetofinal')
 
 # Define database configurations
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': POSTGRES_DB,
-        'USER': POSTGRES_USER,
-        'PASSWORD': POSTGRES_PASSWORD,
-        'HOST': POSTGRES_HOST,
-        'PORT': POSTGRES_PORT
+        'NAME': 'neondb',
+        'USER': 'neondb_owner',
+        'PASSWORD': 'npg_Cy4tefI2oKub',
+        'HOST': 'ep-odd-feather-abpx89zv.eu-west-2.aws.neon.tech',
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     },
     "admin_psql": {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': POSTGRES_DB,
-        'USER': POSTGRES_USER,
-        'PASSWORD': POSTGRES_PASSWORD,
-        'HOST': POSTGRES_HOST,
-        'PORT': POSTGRES_PORT
+        'NAME': 'neondb',
+        'USER': 'neondb_owner',
+        'PASSWORD': 'npg_Cy4tefI2oKub',
+        'HOST': 'ep-odd-feather-abpx89zv.eu-west-2.aws.neon.tech',
+        'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     },
     "mongodb": {
         'ENGINE': 'djongo',
